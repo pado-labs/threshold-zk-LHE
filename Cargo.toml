@@ -1,0 +1,22 @@
+[workspace]
+
+members = ["algebra", "algebra_derive", "bfv"]
+
+resolver = "2"
+
+[workspace.dependencies]
+thiserror = "1.0"
+num-traits = "0.2"
+once_cell = "1.19"
+rand = "0.8"
+rand_distr = "0.4"
+
+criterion = "0.4"
+
+[profile.bench]
+lto = true
+codegen-units = 1
+
+[profile.release]
+lto = true
+codegen-units = 1
