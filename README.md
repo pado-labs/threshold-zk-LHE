@@ -30,13 +30,13 @@ Let's show how it works on the code side.
         /// Setup the system.
         let ctx = ThresholdPKE::gen_context(total_number, threshold_number, indices.to_vec());
 				
-        /// Node 1 generates the keypair, and uses the public to register.
+        /// Node 1 generates the keypair, and uses the public key to register.
         let (sk1, pk1) = ThresholdPKE::gen_keypair(&ctx);
         
-        /// Node 2 generates the keypair, and uses the public to register.
+        /// Node 2 generates the keypair, and uses the public key to register.
         let (sk2, pk2) = ThresholdPKE::gen_keypair(&ctx);
         
-        /// Node 3 generates the keypair, and uses the public to register.
+        /// Node 3 generates the keypair, and uses the public key to register.
         let (sk3, pk3) = ThresholdPKE::gen_keypair(&ctx);
 
         /// The buyer generates the keypair
