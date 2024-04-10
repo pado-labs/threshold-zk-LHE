@@ -14,7 +14,7 @@ As long as there are sufficient honest computation nodes, the buyer can always d
 
 Let's show how it works on the code side.
 
-```Rust
+```rust
         /// Set the total number of the computation nodes.
         /// Note that the current system only supports up to 20 nodes.
         let total_number = 3;
