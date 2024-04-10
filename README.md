@@ -45,7 +45,9 @@ Let's show how it works on the code side.
         let pks = [pk1, pk2, pk3].to_vec();
 
         /// The seller encrypts the message in a hybrid model.
-        /// In this encryption, the seller chooses a symmetric key and splits it into 3 shares, and then encrypts the shares using each public key of the nodes. The seller encryts the message with the symmetric key under ChaCha20Poly1305, which is an AEAD encryption.
+        /// In this encryption, the seller chooses a symmetric key and splits it into 3 shares, 
+        /// then encrypts the shares using each public key of the nodes. 
+        /// The seller encryts the message with the symmetric key under ChaCha20Poly1305, which is an AEAD encryption.
         let (vec_c, nonce, c_bytes) = ThresholdPKE::encrypt_bytes(&ctx, &pks, msg_bytes);
 
         /// Node 1 re-encrypts the ciphertext.
