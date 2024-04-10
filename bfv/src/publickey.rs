@@ -1,3 +1,4 @@
+//! Define the ciphertext of BFV.
 use algebra::Polynomial;
 
 use crate::CipherField;

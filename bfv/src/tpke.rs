@@ -7,7 +7,7 @@ use rand::{CryptoRng, Rng};
 
 use crate::{
     BFVCiphertext, BFVContext, BFVPlaintext, BFVPublicKey, BFVScheme, BFVSecretKey, PlainField,
-    DIMENSION_N, MAX_USER_NUMBER,
+    DIMENSION_N, MAX_NODES_NUMBER,
 };
 
 type F = PlainField;
@@ -36,7 +36,7 @@ impl ThresholdPolicy {
             "threshold number exceeds total number"
         );
         assert!(
-            total_number <= MAX_USER_NUMBER,
+            total_number <= MAX_NODES_NUMBER,
             "total number exceeds MAX_USER_NUMBER"
         );
 
@@ -65,7 +65,7 @@ impl ThresholdPolicy {
         &self.indices
     }
 
-    /// Securely sharing a message
+    /// Securely sharing a message using Shamir secret sharing.
     pub fn secret_sharing<R>(&self, secret: &Polynomial<F>, rng: &mut R) -> Vec<Polynomial<F>>
     where
         R: Rng + CryptoRng,
@@ -155,9 +155,9 @@ impl ThresholdPKE {
         BFVScheme::gen_keypair(ctx.bfv_ctx())
     }
 
-    /// Encrypt a message.
+    /// Encrypt a message, where the message is a polynomial.
     /// First secret sharing the message according to the policy.
-    /// Encrypt each share using different pk's of the parties in `indices`
+    /// Encrypt each share using all the pk's of the parties.
     #[inline]
     pub fn encrypt(
         ctx: &ThresholdPKEContext,
@@ -179,9 +179,8 @@ impl ThresholdPKE {
             .collect()
     }
 
-    /// Encrypt a message.
-    /// First secret sharing the message according to the policy.
-    /// Encrypt each share using different pk's of the parties in `indices`
+    /// Encrypt a message, where the message consists of bytes.
+    /// Note that we use a hybrid encryption, meaning use public key to encryt a symmetric key, and use the symmetric key to encryt the bytes with an AEAD algorithm.
     #[inline]
     pub fn encrypt_bytes(
         ctx: &ThresholdPKEContext,
@@ -241,7 +240,8 @@ impl ThresholdPKE {
         BFVScheme::encrypt(ctx.bfv_ctx(), pk_new, &m)
     }
 
-    /// Combine the ciphertext
+    /// Combine the ciphertext.
+    /// Homomorphically compute the Shamir reconstruction method.
     #[inline]
     pub fn combine(
         ctx: &ThresholdPKEContext,

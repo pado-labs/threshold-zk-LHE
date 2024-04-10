@@ -1,7 +1,8 @@
 #![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![deny(missing_docs)]
 
-//! A linearly homomorphic version of BFV.
+//! A simple linearly homomorphic version of BFV.
+//! The underlying scheme only supports additive homomorphism.
 
 mod ciphertext;
 mod context;
@@ -19,5 +20,5 @@ pub use scheme::BFVScheme;
 pub use secretkey::BFVSecretKey;
 pub use tpke::{ThresholdPKE, ThresholdPKEContext, ThresholdPolicy};
 
-/// The maximam number of users.
-pub const MAX_USER_NUMBER: usize = 20;
+/// The maximam number of nodes.
+pub const MAX_NODES_NUMBER: usize = 20;

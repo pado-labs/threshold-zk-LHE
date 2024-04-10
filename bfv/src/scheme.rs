@@ -1,4 +1,4 @@
-//! The BFV scheme.
+//! The linearly homomorphic BFV scheme.
 
 use algebra::{Field, Polynomial};
 
@@ -92,7 +92,8 @@ impl BFVScheme {
         BFVPlaintext(Polynomial::<PlainField>::from_slice(&msg))
     }
 
-    /// Scale multiplication .
+    /// Scalar multiplication.
+    /// Note that the scalar is chosen from the Plaintext field, not a polynomial.
     #[inline]
     pub fn evaluate_mul_scalar(
         _ctx: &BFVContext,
@@ -106,7 +107,7 @@ impl BFVScheme {
         BFVCiphertext([c1, c2])
     }
 
-    /// Addition
+    /// Addition of two ciphertexts.
     #[inline]
     pub fn evalute_add(
         _ctx: &BFVContext,

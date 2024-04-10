@@ -26,6 +26,7 @@ impl BFVContext {
             sampler: FieldDiscreteGaussianSampler::new(0.0, 3.2).unwrap(),
         }
     }
+    
     /// Returns the rlwe_dimension.
     #[inline]
     pub fn rlwe_dimension(&self) -> usize {
