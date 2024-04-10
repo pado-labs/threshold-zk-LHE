@@ -1,11 +1,13 @@
 //! Define threshold pke with BFV.
 
 use algebra::{Field, Polynomial};
+use chacha20poly1305::{aead::Aead, AeadCore, ChaCha20Poly1305, Key, KeyInit, Nonce};
+use itybity::IntoBitIterator;
 use rand::{CryptoRng, Rng};
 
 use crate::{
     BFVCiphertext, BFVContext, BFVPlaintext, BFVPublicKey, BFVScheme, BFVSecretKey, PlainField,
-    MAX_USER_NUMBER,
+    DIMENSION_N, MAX_USER_NUMBER,
 };
 
 type F = PlainField;
@@ -177,6 +179,27 @@ impl ThresholdPKE {
             .collect()
     }
 
+    /// Encrypt a message.
+    /// First secret sharing the message according to the policy.
+    /// Encrypt each share using different pk's of the parties in `indices`
+    #[inline]
+    pub fn encrypt_bytes(
+        ctx: &ThresholdPKEContext,
+        pks: &Vec<BFVPublicKey>,
+        m: &[u8],
+    ) -> (Vec<BFVCiphertext>, Nonce, Vec<u8>) {
+        let sym_key = ChaCha20Poly1305::generate_key(&mut *ctx.bfv_ctx().csrng_mut());
+
+        let key = BFVPlaintext(to_poly::<DIMENSION_N>(sym_key));
+        let c1 = ThresholdPKE::encrypt(ctx, pks, &key);
+
+        let cipher = ChaCha20Poly1305::new(&sym_key);
+        let nonce = ChaCha20Poly1305::generate_nonce(&mut *ctx.bfv_ctx().csrng_mut());
+        let c2 = cipher.encrypt(&nonce, m).unwrap();
+
+        (c1, nonce, c2)
+    }
+
     /// Decrypt the ciphertext.
     #[inline]
     pub fn decrypt(
@@ -185,6 +208,23 @@ impl ThresholdPKE {
         c: &BFVCiphertext,
     ) -> BFVPlaintext {
         BFVScheme::decrypt(ctx.bfv_ctx(), sk, c)
+    }
+
+    /// Decrypt the ciphertext into bytes.
+    #[inline]
+    pub fn decrypt_bytes(
+        ctx: &ThresholdPKEContext,
+        sk: &BFVSecretKey,
+        c1: &BFVCiphertext,
+        nonce: &Nonce,
+        c2: &[u8],
+    ) -> Vec<u8> {
+        let key = ThresholdPKE::decrypt(ctx, sk, c1);
+        let sym_key = to_bits(key.0);
+
+        let cipher = ChaCha20Poly1305::new(&sym_key);
+
+        cipher.decrypt(nonce, c2).unwrap()
     }
 
     /// Re-encrypt the ciphertext.
@@ -216,4 +256,34 @@ impl ThresholdPKE {
         let lagrange_coeff = Self::gen_lagrange_coeffs(chosen_indices);
         BFVScheme::evaluate_inner_product(ctx.bfv_ctx(), ctxts, &lagrange_coeff)
     }
+}
+
+// Transfer a symmetric secret key into a polynomial with length N with 0 paddings.
+fn to_poly<const N: usize>(key: Key) -> Polynomial<PlainField> {
+    let poly = key.into_lsb0_vec();
+    assert!(N >= poly.len());
+    let mut poly: Vec<PlainField> = poly
+        .into_iter()
+        .map(|x| if x { PlainField::ONE } else { PlainField::ZERO })
+        .collect();
+    poly.resize(N, PlainField::ZERO);
+    Polynomial::from_slice(&poly)
+}
+
+// Transfer a polynomial into a symmetric key.
+fn to_bits(poly: Polynomial<PlainField>) -> Key {
+    let (key, _) = poly.as_slice().split_at(256);
+    let key: Vec<u8> = key
+        .chunks(8)
+        .map(|x| {
+            let mut value = 0;
+            for (i, &bit) in x.iter().enumerate() {
+                if bit == PlainField::ONE {
+                    value |= 1 << i;
+                }
+            }
+            value
+        })
+        .collect();
+    *Key::from_slice(&key)
 }
