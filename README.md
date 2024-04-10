@@ -27,7 +27,7 @@ Let's show how it works on the code side.
         
         let msg_bytes = b"this is the message";
 
-		/// Setup the system.
+/// Setup the system.
         let ctx = ThresholdPKE::gen_context(total_number, threshold_number, indices.to_vec());
 				
 		/// Node 1 generates the keypair, and uses the public to register.
