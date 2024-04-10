@@ -27,10 +27,10 @@ Let's show how it works on the code side.
         
         let msg_bytes = b"this is the message";
 
-/// Setup the system.
+        /// Setup the system.
         let ctx = ThresholdPKE::gen_context(total_number, threshold_number, indices.to_vec());
 				
-		/// Node 1 generates the keypair, and uses the public to register.
+        /// Node 1 generates the keypair, and uses the public to register.
         let (sk1, pk1) = ThresholdPKE::gen_keypair(&ctx);
         
         /// Node 2 generates the keypair, and uses the public to register.
@@ -39,16 +39,16 @@ Let's show how it works on the code side.
         /// Node 3 generates the keypair, and uses the public to register.
         let (sk3, pk3) = ThresholdPKE::gen_keypair(&ctx);
 
-		/// The buyer generates the keypair
+        /// The buyer generates the keypair
         let (sk, pk) = ThresholdPKE::gen_keypair(&ctx);
 
         let pks = [pk1, pk2, pk3].to_vec();
 
-		/// The seller encrypts the message in a hybrid model.
-		/// In this encryption, the seller chooses a symmetric key and splits it into 3 shares, and then encrypts the shares using each public key of the nodes. The seller encryts the message with the symmetric key under ChaCha20Poly1305, which is an AEAD encryption.
+        /// The seller encrypts the message in a hybrid model.
+        /// In this encryption, the seller chooses a symmetric key and splits it into 3 shares, and then encrypts the shares using each public key of the nodes. The seller encryts the message with the symmetric key under ChaCha20Poly1305, which is an AEAD encryption.
         let (vec_c, nonce, c_bytes) = ThresholdPKE::encrypt_bytes(&ctx, &pks, msg_bytes);
 
-		/// Node 1 re-encrypts the ciphertext.
+        /// Node 1 re-encrypts the ciphertext.
         let c1 = ThresholdPKE::re_encrypt(&ctx, &vec_c[0], &sk1, &pk);
         
         /// Node 2 re-encrypts the ciphertext.
@@ -60,10 +60,10 @@ Let's show how it works on the code side.
         let ctxts = [c1, c2, c3].to_vec();
         let chosen_indices = [F::new(1), F::new(2), F::new(3)].to_vec();
 
-		/// An aggregator combine all the ciphertext into one ciphertext under the buyer's public key.
+        /// An aggregator combine all the ciphertext into one ciphertext under the buyer's public key.
         let c = ThresholdPKE::combine(&ctx, &ctxts, &chosen_indices);
 
-		/// The buyer can then decrypt the ciphertext.
+        /// The buyer can then decrypt the ciphertext.
         let m_res = ThresholdPKE::decrypt_bytes(&ctx, &sk, &c, &nonce, &c_bytes);
 ```
 
