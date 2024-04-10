@@ -60,7 +60,7 @@ Let's show how it works on the code side.
         let ctxts = [c1, c2, c3].to_vec();
         let chosen_indices = [F::new(1), F::new(2), F::new(3)].to_vec();
 
-        /// An aggregator combine all the ciphertext into one ciphertext under the buyer's public key.
+        /// An aggregator combines all the ciphertext into one ciphertext under the buyer's public key.
         let c = ThresholdPKE::combine(&ctx, &ctxts, &chosen_indices);
 
         /// The buyer can then decrypt the ciphertext.
