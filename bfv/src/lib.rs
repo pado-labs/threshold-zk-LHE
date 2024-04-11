@@ -20,5 +20,5 @@ pub use scheme::BFVScheme;
 pub use secretkey::BFVSecretKey;
 pub use tpke::{ThresholdPKE, ThresholdPKEContext, ThresholdPolicy};
 
-/// The maximam number of nodes.
+/// The maximum number of nodes.
 pub const MAX_NODES_NUMBER: usize = 20;
