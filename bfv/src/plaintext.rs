@@ -4,9 +4,10 @@ use algebra::{
     derive::{Field, Prime, Random},
     Polynomial,
 };
+use serde::{Deserialize, Serialize};
 
 /// The field for the plaintext space.
-#[derive(Field, Random, Prime)]
+#[derive(Field, Random, Prime, Serialize, Deserialize)]
 #[modulus = 61]
 pub struct PlainField(u16);
 

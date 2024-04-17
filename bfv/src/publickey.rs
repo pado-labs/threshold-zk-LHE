@@ -1,10 +1,11 @@
 //! Define the ciphertext of BFV.
 use algebra::Polynomial;
+use serde::{Deserialize, Serialize};
 
 use crate::CipherField;
 
 /// Define the public key of BFV.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BFVPublicKey(pub [Polynomial<CipherField>; 2]);
 
 impl BFVPublicKey {

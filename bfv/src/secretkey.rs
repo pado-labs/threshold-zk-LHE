@@ -1,9 +1,10 @@
 //! The secret key of BFV.
 use crate::{context::BFVContext, BFVPublicKey, CipherField};
 use algebra::Polynomial;
+use serde::{Deserialize, Serialize};
 
 /// Define the secret key of BFV.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BFVSecretKey {
     ternary_key: Polynomial<CipherField>,
 }
