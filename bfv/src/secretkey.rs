@@ -36,4 +36,30 @@ impl BFVSecretKey {
         let b = &a * self.secret_key() + e;
         BFVPublicKey::new([b, -a])
     }
+
+    /// Serialize to Vec<u8>
+    pub fn to_vec(&self) -> Vec<u8> {
+        let mut bytes = vec![];
+
+        for data in self.secret_key().iter() {
+            bytes.extend(data.to_bytes());
+        }
+
+        bytes
+    }
+
+    /// Deserialize from Vec<u8>
+    pub fn from_vec(bytes: &Vec<u8>) -> Self {
+        let mut iter = bytes
+            .chunks_exact(4)
+            .map(|chunk| <[u8; 4]>::try_from(chunk).unwrap());
+
+        let mut data = vec![];
+        while let Some(v) = iter.next() {
+            data.push(CipherField::from_bytes(v));
+        }
+        Self {
+            ternary_key: Polynomial::<CipherField>::new(data),
+        }
+    }
 }
