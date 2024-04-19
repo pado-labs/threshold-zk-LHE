@@ -15,7 +15,7 @@ impl BFVPublicKey {
         Self(polys)
     }
 
-    /// Serialize to Vec<u8>
+    /// Serialize to `Vec<u8>`
     pub fn to_vec(&self) -> Vec<u8> {
         // layout: |len0,len1|data0,data1|
         let mut bytes = vec![];
@@ -36,8 +36,8 @@ impl BFVPublicKey {
         bytes
     }
 
-    /// Deserialize from Vec<u8>
-    pub fn from_vec(bytes: &Vec<u8>) -> Self {
+    /// Deserialize from [u8]
+    pub fn from_vec(bytes: &[u8]) -> Self {
         let mut iter = bytes
             .chunks_exact(4)
             .map(|chunk| <[u8; 4]>::try_from(chunk).unwrap());
